@@ -18,7 +18,7 @@ jobs:
     - name: black
       run: |
         pip install black
-        black source/tensor_tenchnical.py    
+        black /source/technical_tensor.py     
     - name: Lint with flake8
       run: |
         pip install flake8
