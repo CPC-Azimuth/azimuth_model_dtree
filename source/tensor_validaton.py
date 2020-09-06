@@ -2,9 +2,15 @@ import numpy as np
 from keras.models import load_model
 from util import csv_to_dataset, history_points
 
-model = load_model('technical_model.h5')
+model = load_model("technical_model.h5")
 
-ohlcv_histories, technical_indicators, next_day_open_values, unscaled_y, y_normaliser = csv_to_dataset('MSFT_daily.csv')
+(
+    ohlcv_histories,
+    technical_indicators,
+    next_day_open_values,
+    unscaled_y,
+    y_normaliser,
+) = csv_to_dataset("MSFT_daily.csv")
 
 test_split = 0.9
 n = int(ohlcv_histories.shape[0] * test_split)
@@ -30,11 +36,13 @@ start = 0
 end = -1
 
 x = -1
-for ohlcv, ind in zip(ohlcv_test[start: end], tech_ind_test[start: end]):
+for ohlcv, ind in zip(ohlcv_test[start:end], tech_ind_test[start:end]):
     normalised_price_today = ohlcv[-1][0]
     normalised_price_today = np.array([[normalised_price_today]])
     price_today = y_normaliser.inverse_transform(normalised_price_today)
-    predicted_price_tomorrow = np.squeeze(y_normaliser.inverse_transform(model.predict([[ohlcv], [ind]])))
+    predicted_price_tomorrow = np.squeeze(
+        y_normaliser.inverse_transform(model.predict([[ohlcv], [ind]]))
+    )
     delta = predicted_price_tomorrow - price_today
     if delta > thresh:
         buys.append((x, price_today[0][0]))
@@ -70,17 +78,19 @@ import matplotlib.pyplot as plt
 
 plt.gcf().set_size_inches(22, 15, forward=True)
 
-real = plt.plot(unscaled_y_test[start:end], label='real')
-pred = plt.plot(y_test_predicted[start:end], label='predicted')
+real = plt.plot(unscaled_y_test[start:end], label="real")
+pred = plt.plot(y_test_predicted[start:end], label="predicted")
 
 if len(buys) > 0:
-    plt.scatter(list(list(zip(*buys))[0]), list(list(zip(*buys))[1]), c='#00ff00', s=50)
+    plt.scatter(list(list(zip(*buys))[0]), list(list(zip(*buys))[1]), c="#00ff00", s=50)
 if len(sells) > 0:
-    plt.scatter(list(list(zip(*sells))[0]), list(list(zip(*sells))[1]), c='#ff0000', s=50)
+    plt.scatter(
+        list(list(zip(*sells))[0]), list(list(zip(*sells))[1]), c="#ff0000", s=50
+    )
 
 # real = plt.plot(unscaled_y[start:end], label='real')
 # pred = plt.plot(y_predicted[start:end], label='predicted')
 
-plt.legend(['Real', 'Predicted', 'Buy', 'Sell'])
+plt.legend(["Real", "Predicted", "Buy", "Sell"])
 
 plt.show()
