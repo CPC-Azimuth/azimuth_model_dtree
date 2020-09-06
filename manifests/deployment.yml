@@ -1,0 +1,16 @@
+apiVersion : apps/v1beta1
+kind: Deployment
+metadata:
+  name: azimuthmodel 
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: azimuthmodel 
+    spec:
+      containers:
+        - name: azimuthmodel 
+          image: azimuth.azurecr.io/azimuthmodel
+          ports:
+          - containerPort: 80
